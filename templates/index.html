@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kripto Analiz (Matplotlib)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+
+        .control-panel {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        select,
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 20%;
+        }
+
+        .val {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Resim Stili */
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 style="text-align: center;">💰 Kripto Analiz Paneli (Matplotlib)</h1>
+
+    <!-- KONTROL PANELI -->
+    <div class="control-panel">
+        <select id="coinSelect">
+            <option value="bitcoin">Bitcoin (BTC)</option>
+            <option value="ethereum">Ethereum (ETH)</option>
+            <option value="solana">Solana (SOL)</option>
+            <option value="ripple">XRP</option>
+        </select>
+        <button onclick="analyze()">Analiz Et</button>
+    </div>
+
+    <!-- SONUC PANELI -->
+    <div id="resultPanel" style="display:none;">
+        <div class="stats">
+            <div class="stat-box">Anlık<div id="price" class="val">-</div>
+            </div>
+            <div class="stat-box">Ortalama<div id="mean" class="val">-</div>
+            </div>
+            <div class="stat-box">En Yüksek<div id="max" class="val">-</div>
+            </div>
+            <div class="stat-box">En Düşük<div id="min" class="val">-</div>
+            </div>
+        </div>
+
+        <!-- GRAFIK (ARTIK BİR RESİM) -->
+        <div style="background: white; padding: 10px; border-radius: 10px; text-align: center;">
+            <h3>Son 30 Günlük Fiyat Grafiği</h3>
+            <img id="chartImage" src="" alt="Grafik Yükleniyor...">
+        </div>
+    </div>
+
+    <script>
+        async function analyze() {
+            const coin = document.getElementById("coinSelect").value;
+
+            // Backend'den veriyi al
+            const response = await fetch(`/api/analyze/${coin}`);
+            const data = await response.json();
+
+            // Kutuları doldur
+            if (data.current_price) {
+                document.getElementById("price").innerText = "$" + data.current_price;
+                document.getElementById("mean").innerText = "$" + data.mean_price;
+                document.getElementById("max").innerText = "$" + data.max_price;
+                document.getElementById("min").innerText = "$" + data.min_price;
+
+                // RESMİ GÜNCELLE
+                // Sonuna ?t=... ekliyoruz ki tarayıcı eski resmi önbellekten (cache) getirmesin, yenisini istesin.
+                document.getElementById("chartImage").src = data.chart_url + "?t=" + new Date().getTime();
+
+                // Paneli göster
+                document.getElementById("resultPanel").style.display = "block";
+            } else {
+                alert("Veri alınamadı!");
+            }
+        }
+    </script>
+</body>
+
+</html>
