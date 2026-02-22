@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Üretilen statik dosyalar (her çalıştırmada yeniden oluşur)
+static/*.png
+
+# Ortam değişkenleri
+.env
+
+# Sanal ortam
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
